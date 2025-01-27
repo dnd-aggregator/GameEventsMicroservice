@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package dnd;
+
 message CharacterKilledKey {
   int64 game_id = 1;
 }

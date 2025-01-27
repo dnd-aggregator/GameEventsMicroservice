@@ -8,17 +8,10 @@ public class Initial : SqlMigration
 {
     protected override string GetUpSql(IServiceProvider serviceProvider) =>
         """
-        create type game_state as enum
-        (
-            'Scheduled',
-            'Started',
-            'Finished'
-        );
-
         create table games
         (
             game_id bigint primary key not null,
-            game_state game_state not null
+            game_state bigint not null
         );
 
         create table game_characters
@@ -34,6 +27,5 @@ public class Initial : SqlMigration
         """
         drop table game_characters;
         drop table games;
-        drop type game_state;
         """;
 }

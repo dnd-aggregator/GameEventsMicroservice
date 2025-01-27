@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{763BFE
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		.gitignore = .gitignore
+		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{6612692B-A111-4856-A058-9CF4C2672F92}"
@@ -32,6 +33,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEventMicroservice", "src\GameEventMicroservice\GameEventMicroservice.csproj", "{AE85F8D2-4986-40AE-A92C-683CE1DB59BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEventMicroservice.Presentation.Http", "src\Presentation\GameEventMicroservice.Presentation.Http\GameEventMicroservice.Presentation.Http.csproj", "{AE079871-926E-427E-9F16-8FFD3C6B6CC2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{70071D10-CBE8-4279-A4AD-A78D96E2AD1E}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,10 +1,11 @@
-﻿using GameEventMicroservice.Application.Contracts;
+﻿using Dnd;
+using GameEventMicroservice.Application.Contracts;
 using GameEventMicroservice.Application.Contracts.Operations;
 using Itmo.Dev.Platform.Kafka.Consumer;
 
 namespace GameEventMicroservice.Presentation.Kafka.ConsumerHandlers;
 
-public class GameStatusConsumerHandler : IKafkaInboxHandler<GameScheduleKey, GameScheduleValue>
+public class GameStatusConsumerHandler : IKafkaConsumerHandler<GameScheduleKey, GameScheduleValue>
 {
     private readonly IGameStatusService _gameStatusService;
 
@@ -14,10 +15,10 @@ public class GameStatusConsumerHandler : IKafkaInboxHandler<GameScheduleKey, Gam
     }
 
     public async ValueTask HandleAsync(
-        IEnumerable<IKafkaInboxMessage<GameScheduleKey, GameScheduleValue>> messages,
+        IEnumerable<IKafkaConsumerMessage<GameScheduleKey, GameScheduleValue>> messages,
         CancellationToken cancellationToken)
     {
-        foreach (IKafkaInboxMessage<GameScheduleKey, GameScheduleValue> message in messages)
+        foreach (IKafkaConsumerMessage<GameScheduleKey, GameScheduleValue> message in messages)
         {
             var request = new ScheduleGame(message.Value.GameId, message.Value.CharacterIds);
 

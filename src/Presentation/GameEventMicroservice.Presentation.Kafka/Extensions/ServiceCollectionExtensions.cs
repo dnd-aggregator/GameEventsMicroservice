@@ -1,4 +1,6 @@
+using Dnd;
 using GameEventMicroservice.Presentation.Kafka.ConsumerHandlers;
+using Itmo.Dev.Platform.Events;
 using Itmo.Dev.Platform.Kafka.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,46 +38,22 @@ public static class ServiceCollectionExtensions
             .AddConsumer(b => b
                 .WithKey<GameScheduleKey>()
                 .WithValue<GameScheduleValue>()
-                .WithConfiguration(configuration.GetSection($"{consumerKey}:MessageName"))
+                .WithConfiguration(configuration.GetSection($"{consumerKey}:GameSchedule"))
                 .DeserializeKeyWithProto()
                 .DeserializeValueWithProto()
-                .HandleInboxWith<GameStatusConsumerHandler>())
+                .HandleWith<GameStatusConsumerHandler>())
             .AddProducer(producer => producer
                 .WithKey<GameStatusKey>()
                 .WithValue<GameStatusValue>()
-                .WithConfiguration(configuration.GetSection($"{producerKey}:GameFinnish"))
+                .WithConfiguration(configuration.GetSection($"{producerKey}:GameStatus"))
                 .SerializeKeyWithProto()
-                .SerializeValueWithProto()
-                .WithOutbox())
-            .AddProducer(producer => producer
-                .WithKey<GameStatusKey>()
-                .WithValue<GameStatusValue>()
-                .WithConfiguration(configuration.GetSection($"{producerKey}:GameStart"))
-                .SerializeKeyWithProto()
-                .SerializeValueWithProto()
-                .WithOutbox())
-            .AddProducer(producer => producer
-                .WithKey<CharacterKilledKey>()
-                .WithValue<CharacterKilledValue>()
-                .WithConfiguration(configuration.GetSection($"{producerKey}:Killed"))
-                .SerializeKeyWithProto()
-                .SerializeValueWithProto()
-                .WithOutbox())
-            .AddProducer(producer => producer
-                .WithKey<AddWeaponKey>()
-                .WithValue<AddWeaponValue>()
-                .WithConfiguration(configuration.GetSection($"{producerKey}:Weapon"))
-                .SerializeKeyWithProto()
-                .SerializeValueWithProto()
-                .WithOutbox())
-            .AddProducer(producer => producer
-                .WithKey<AddGearKey>()
-                .WithValue<AddGearValue>()
-                .WithConfiguration(configuration.GetSection($"{producerKey}:Gear"))
-                .SerializeKeyWithProto()
-                .SerializeValueWithProto()
-                .WithOutbox()));
-
+                .SerializeValueWithProto()));
         return collection;
+    }
+
+    public static IEventsConfigurationBuilder AddPresentationKafkaEventHandlers(
+        this IEventsConfigurationBuilder builder)
+    {
+        return builder.AddHandlersFromAssemblyContaining<IAssemblyMarker>();
     }
 }

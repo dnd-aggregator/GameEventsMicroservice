@@ -1,4 +1,5 @@
-﻿using GameEventMicroservice.Application.Contracts.Events;
+﻿using Dnd;
+using GameEventMicroservice.Application.Contracts.Events;
 using Itmo.Dev.Platform.Events;
 using Itmo.Dev.Platform.Kafka.Extensions;
 using Itmo.Dev.Platform.Kafka.Producer;

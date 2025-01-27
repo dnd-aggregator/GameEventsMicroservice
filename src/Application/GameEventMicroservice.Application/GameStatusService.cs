@@ -29,7 +29,7 @@ public class GameStatusService : IGameStatusService
         Game? scheduledGame = await _persistenceContext.GameStatusRepository.GetAsync(game.Id, cancellationToken);
         if (scheduledGame == null) return new StartGame.Result.GameNotFound();
 
-        var request = new Game(scheduledGame.Id, GameStatus.Scheduled, scheduledGame.CharactersIds);
+        var request = new Game(scheduledGame.Id, GameStatus.Started, scheduledGame.CharactersIds);
         await _persistenceContext.GameStatusRepository.AddOrUpdateAsync([request], cancellationToken);
         var gse = new GameStartedEvent(request.Id);
         await _eventPublisher.PublishAsync(gse, cancellationToken);
