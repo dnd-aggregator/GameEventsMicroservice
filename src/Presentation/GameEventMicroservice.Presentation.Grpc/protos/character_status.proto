@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+message KillCharacterRequest {
+  int64 game_id = 1;
+  int64 character_id = 2;
+}
+
+message KillCharacterResponse {
+  oneof result {
+    Success success = 1;
+    NotFound not_found = 2;
+  }
+}
+
+message AddWeaponRequest {
+  int64 game_id = 1;
+  int64 character_id = 2;
+  string weapon = 3;
+}
+
+message AddWeaponResponse {
+  oneof result {
+    Success success = 1;
+    NotFound not_found = 2;
+  }
+}
+
+message AddGearRequest {
+  int64 game_id = 1;
+  int64 character_id = 2;
+  string gear = 3;
+}
+
+message AddGearResponse {
+  oneof result {
+    Success success = 1;
+    NotFound not_found = 2;
+  }
+}
+
+message Success {}
+
+message NotFound {}
+
+service CharacterService {
+  rpc KillCharacter(KillCharacterRequest) returns (KillCharacterResponse);
+  rpc AddWeapon(AddWeaponRequest) returns (AddWeaponResponse);
+  rpc AddGear(AddGearRequest) returns (AddGearResponse);
+}

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <ItemGroup>
+        <ProjectReference Include="..\Application\GameEventMicroservice.Application\GameEventMicroservice.Application.csproj"/>
+        <ProjectReference Include="..\Infrastructure\GameEventMicroservice.Infrastructure.Persistence\GameEventMicroservice.Infrastructure.Persistence.csproj"/>
+        <ProjectReference Include="..\Presentation\GameEventMicroservice.Presentation.Grpc\GameEventMicroservice.Presentation.Grpc.csproj"/>
+        <ProjectReference Include="..\Presentation\GameEventMicroservice.Presentation.Http\GameEventMicroservice.Presentation.Http.csproj" />
+        <ProjectReference Include="..\Presentation\GameEventMicroservice.Presentation.Kafka\GameEventMicroservice.Presentation.Kafka.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Itmo.Dev.Platform.Observability" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.*.json">
+            <DependentUpon>appsettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
+
+</Project>

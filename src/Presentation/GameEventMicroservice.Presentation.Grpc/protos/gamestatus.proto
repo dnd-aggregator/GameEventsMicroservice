@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package game;
+
+service GameStatusService {
+  rpc StartGame(StartGameRequest) returns (StartGameResponse);
+  rpc FinishGame(FinishGameRequest) returns (FinishGameResponse);
+}
+
+message StartGameRequest {
+  int64 game_id = 1;
+}
+
+message StartGameResponse {
+}
+
+
+message FinishGameRequest {
+  int64 game_id = 1;
+}
+message FinishGameResponse {
+}

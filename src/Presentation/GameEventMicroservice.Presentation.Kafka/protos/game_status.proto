@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+message GameStatusKey {
+  int64 Game_id = 1;
+}
+
+message GameStatusValue {
+
+  oneof event {
+    GameStarted game_started = 2;
+    GameFinished game_finished = 3;
+  }
+  
+  message GameStarted {
+    int64 Game_id = 1;
+  }
+
+  message GameFinished {
+    int64 Game_id = 1;
+  }
+}
