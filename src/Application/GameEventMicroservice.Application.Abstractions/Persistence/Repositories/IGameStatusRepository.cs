@@ -4,7 +4,9 @@ namespace GameEventMicroservice.Application.Abstractions.Persistence.Repositorie
 
 public interface IGameStatusRepository
 {
-    Task AddOrUpdateAsync(IReadOnlyCollection<Game> games, CancellationToken cancellationToken);
-
     Task<Game?> GetAsync(long id, CancellationToken cancellationToken);
+
+    Task AddAsync(Game game, CancellationToken cancellationToken);
+
+    Task UpdateAsync(Game game, CancellationToken cancellationToken);
 }

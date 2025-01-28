@@ -2,7 +2,6 @@
 using GameEventMicroservice.Application.Models;
 using Itmo.Dev.Platform.Persistence.Abstractions.Commands;
 using Itmo.Dev.Platform.Persistence.Abstractions.Connections;
-using System.Data;
 using System.Data.Common;
 
 namespace GameEventMicroservice.Infrastructure.Persistence.Repositories;
@@ -14,41 +13,6 @@ public class GameStatusRepository : IGameStatusRepository
     public GameStatusRepository(IPersistenceConnectionProvider connectionProvider)
     {
         _connectionProvider = connectionProvider;
-    }
-
-    public async Task AddOrUpdateAsync(IReadOnlyCollection<Game> games, CancellationToken cancellationToken)
-    {
-        const string sql = """
-                            insert into games (game_id, game_state)
-                            select * from unnest(@ids, @states)on conflict (game_id)
-                            do update set game_state = excluded.game_state;
-                           """;
-        const string charactersSql = """
-                                     insert into game_characters (game_id, character_id)
-                                     select * from unnest(@gameIds, @characterIds)
-                                     on conflict do nothing;
-                                     """;
-
-        await using IPersistenceConnection connection = await _connectionProvider.GetConnectionAsync(cancellationToken);
-
-        await using (IPersistenceCommand gameCommand = connection.CreateCommand(sql)
-                         .AddParameter("@ids", games.Select(x => x.Id))
-                         .AddParameter("@states", games.Select(x => (int)x.Status)))
-        {
-            await gameCommand.ExecuteNonQueryAsync(cancellationToken);
-        }
-
-        long[] gameIdList = games.SelectMany(g => g.CharactersIds.Select(c => g.Id)).ToArray();
-        long[] characterIdList = games.SelectMany(g => g.CharactersIds).ToArray();
-
-        if (gameIdList.Length > 0)
-        {
-            await using IPersistenceCommand characterCommand = connection.CreateCommand(charactersSql)
-                .AddParameter("@gameIds", gameIdList)
-                .AddParameter("@characterIds", characterIdList);
-
-            await characterCommand.ExecuteNonQueryAsync(cancellationToken);
-        }
     }
 
     public async Task<Game?> GetAsync(long id, CancellationToken cancellationToken)
@@ -93,5 +57,79 @@ public class GameStatusRepository : IGameStatusRepository
 
         var game = new Game(gameId, gameStatus, characterIds);
         return game;
+    }
+
+    public async Task AddAsync(Game game, CancellationToken cancellationToken)
+    {
+        const string sql = """
+                     insert into games (game_id, game_state)
+                     VALUES (@id, @state)
+                     """;
+
+        await using IPersistenceConnection connection = await _connectionProvider.GetConnectionAsync(cancellationToken);
+
+        await using IPersistenceCommand command = connection.CreateCommand(sql)
+            .AddParameter("@id", game.Id)
+            .AddParameter("@state", (int)game.Status);
+
+        await command.ExecuteNonQueryAsync(cancellationToken);
+
+        await connection.DisposeAsync();
+
+        await command.DisposeAsync();
+
+        foreach (long characterId in game.CharactersIds)
+        {
+            string sqlCharacter = """
+                         insert into game_characters (game_id, character_id)
+                         VALUES (@game_id, @character_id)
+                         """;
+            await using IPersistenceConnection connect = await _connectionProvider.GetConnectionAsync(cancellationToken);
+            await using IPersistenceCommand characterCommand = connect.CreateCommand(sqlCharacter);
+            await characterCommand.ExecuteNonQueryAsync(cancellationToken);
+            await connect.DisposeAsync();
+            await command.DisposeAsync();
+        }
+    }
+
+    public async Task UpdateAsync(Game game, CancellationToken cancellationToken)
+    {
+        const string updateGameSql = """
+                                     UPDATE games
+                                     SET game_state = @state
+                                     WHERE game_id = @id;
+                                     """;
+
+        const string deleteCharactersSql = """
+                                           DELETE FROM game_characters
+                                           WHERE game_id = @id;
+                                           """;
+
+        const string insertCharacterSql = """
+                                          INSERT INTO game_characters (game_id, character_id)
+                                          VALUES (@game_id, @character_id);
+                                          """;
+
+        await using IPersistenceConnection connection = await _connectionProvider.GetConnectionAsync(cancellationToken);
+
+        await using IPersistenceCommand updateGameCommand = connection.CreateCommand(updateGameSql)
+            .AddParameter("@id", game.Id)
+            .AddParameter("@state", (int)game.Status);
+
+        await updateGameCommand.ExecuteNonQueryAsync(cancellationToken);
+
+        await using IPersistenceCommand deleteCharactersCommand = connection.CreateCommand(deleteCharactersSql)
+            .AddParameter("@id", game.Id);
+
+        await deleteCharactersCommand.ExecuteNonQueryAsync(cancellationToken);
+
+        foreach (long characterId in game.CharactersIds)
+        {
+            await using IPersistenceCommand insertCharacterCommand = connection.CreateCommand(insertCharacterSql)
+                .AddParameter("@game_id", game.Id)
+                .AddParameter("@character_id", characterId);
+
+            await insertCharacterCommand.ExecuteNonQueryAsync(cancellationToken);
+        }
     }
 }

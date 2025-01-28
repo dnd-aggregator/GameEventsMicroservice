@@ -21,7 +21,7 @@ public class GameStatusService : IGameStatusService
     public async Task ScheduleGame(ScheduleGame game, CancellationToken cancellationToken)
     {
         var request = new Game(game.Id, GameStatus.Scheduled, game.CharactersIds);
-        await _persistenceContext.GameStatusRepository.AddOrUpdateAsync([request], cancellationToken);
+        await _persistenceContext.GameStatusRepository.AddAsync(request, cancellationToken);
     }
 
     public async Task<StartGame.Result> StartGame(StartGame.Request game, CancellationToken cancellationToken = default)
@@ -30,7 +30,7 @@ public class GameStatusService : IGameStatusService
         if (scheduledGame == null) return new StartGame.Result.GameNotFound();
 
         var request = new Game(scheduledGame.Id, GameStatus.Started, scheduledGame.CharactersIds);
-        await _persistenceContext.GameStatusRepository.AddOrUpdateAsync([request], cancellationToken);
+        await _persistenceContext.GameStatusRepository.UpdateAsync(request, cancellationToken);
         var gse = new GameStartedEvent(request.Id);
         await _eventPublisher.PublishAsync(gse, cancellationToken);
         return new StartGame.Result.Success();
@@ -45,7 +45,7 @@ public class GameStatusService : IGameStatusService
             return new FinnishGame.Result.GameNotFound();
 
         var request = new Game(scheduledGame.Id, GameStatus.Finished, scheduledGame.CharactersIds);
-        await _persistenceContext.GameStatusRepository.AddOrUpdateAsync([request], cancellationToken);
+        await _persistenceContext.GameStatusRepository.UpdateAsync(request, cancellationToken);
         var gfe = new GameFinnishedEvent(request.Id);
         await _eventPublisher.PublishAsync(gfe, cancellationToken);
         return new FinnishGame.Result.Success();
