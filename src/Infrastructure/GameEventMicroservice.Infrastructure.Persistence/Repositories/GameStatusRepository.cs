@@ -25,7 +25,7 @@ public class GameStatusRepository : IGameStatusRepository
                            """;
         const string charactersSql = """
                                      insert into game_characters (game_id, character_id)
-                                     select * from unnest(:@gameIds, :@characterIds)
+                                     select * from unnest(@gameIds, @characterIds)
                                      on conflict do nothing;
                                      """;
 
