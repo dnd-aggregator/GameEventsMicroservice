@@ -8,28 +8,30 @@ namespace GameEventMicroservice.Presentation.Kafka.ProducerHandlers;
 
 public class AddWeaponHandler : IEventHandler<AddWeaponEvent>
 {
-    private readonly IKafkaMessageProducer<AddWeaponKey, AddWeaponValue> _producer;
+    private readonly IKafkaMessageProducer<CharacterUpdateKey, CharacterUpdateValue> _producer;
 
-    public AddWeaponHandler(IKafkaMessageProducer<AddWeaponKey, AddWeaponValue> producer)
+    public AddWeaponHandler(IKafkaMessageProducer<CharacterUpdateKey, CharacterUpdateValue> producer)
     {
         _producer = producer;
     }
 
     public async ValueTask HandleAsync(AddWeaponEvent evt, CancellationToken cancellationToken)
     {
-        var key = new AddWeaponKey()
+        var key = new CharacterUpdateKey()
         {
             GameId = evt.GameId,
         };
 
-        var value = new AddWeaponValue
+        var value = new CharacterUpdateValue
         {
-            GameId = evt.GameId,
-            CharacterId = evt.CharacterId,
-            Weapon = evt.Weapon,
+            AddWeapon = new AddWeaponValue()
+            {
+                GameId = evt.GameId,
+                CharacterId = evt.CharacterId,
+                Weapon = evt.Weapon,
+            },
         };
-
-        var message = new KafkaProducerMessage<AddWeaponKey, AddWeaponValue>(key, value);
+        var message = new KafkaProducerMessage<CharacterUpdateKey, CharacterUpdateValue>(key, value);
         await _producer.ProduceAsync(message, cancellationToken);
     }
 }

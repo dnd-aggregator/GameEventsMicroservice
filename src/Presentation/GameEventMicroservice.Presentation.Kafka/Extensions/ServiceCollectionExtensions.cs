@@ -47,6 +47,24 @@ public static class ServiceCollectionExtensions
                 .WithValue<GameStatusValue>()
                 .WithConfiguration(configuration.GetSection($"{producerKey}:GameStatus"))
                 .SerializeKeyWithProto()
+                .SerializeValueWithProto())
+            .AddProducer(producer => producer
+                .WithKey<CharacterUpdateKey>()
+                .WithValue<CharacterUpdateValue>()
+                .WithConfiguration(configuration.GetSection($"{producerKey}:CharacterUpdate"))
+                .SerializeKeyWithProto()
+                .SerializeValueWithProto())
+            .AddProducer(producer => producer
+                .WithKey<CharacterUpdateKey>()
+                .WithValue<CharacterUpdateValue>()
+                .WithConfiguration(configuration.GetSection($"{producerKey}:CharacterUpdate"))
+                .SerializeKeyWithProto()
+                .SerializeValueWithProto())
+            .AddProducer(producer => producer
+                .WithKey<CharacterUpdateKey>()
+                .WithValue<CharacterUpdateValue>()
+                .WithConfiguration(configuration.GetSection($"{producerKey}:CharacterUpdate"))
+                .SerializeKeyWithProto()
                 .SerializeValueWithProto()));
         return collection;
     }

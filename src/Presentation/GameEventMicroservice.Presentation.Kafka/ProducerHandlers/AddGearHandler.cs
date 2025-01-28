@@ -8,28 +8,30 @@ namespace GameEventMicroservice.Presentation.Kafka.ProducerHandlers;
 
 public class AddGearHandler : IEventHandler<AddGearEvent>
 {
-    private readonly IKafkaMessageProducer<AddGearKey, AddGearValue> _producer;
+    private readonly IKafkaMessageProducer<CharacterUpdateKey, CharacterUpdateValue> _producer;
 
-    public AddGearHandler(IKafkaMessageProducer<AddGearKey, AddGearValue> producer)
+    public AddGearHandler(IKafkaMessageProducer<CharacterUpdateKey, CharacterUpdateValue> producer)
     {
         _producer = producer;
     }
 
     public async ValueTask HandleAsync(AddGearEvent evt, CancellationToken cancellationToken)
     {
-        var key = new AddGearKey()
+        var key = new CharacterUpdateKey()
         {
             GameId = evt.GameId,
         };
 
-        var value = new AddGearValue
+        var value = new CharacterUpdateValue
         {
-            GameId = evt.GameId,
-            CharacterId = evt.CharacterId,
-            Gear = evt.Gear,
+            AddGear = new AddGearValue()
+            {
+                GameId = evt.GameId,
+                CharacterId = evt.CharacterId,
+                Gear = evt.Gear,
+            },
         };
-
-        var message = new KafkaProducerMessage<AddGearKey, AddGearValue>(key, value);
+        var message = new KafkaProducerMessage<CharacterUpdateKey, CharacterUpdateValue>(key, value);
         await _producer.ProduceAsync(message, cancellationToken);
     }
 }

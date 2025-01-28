@@ -8,27 +8,29 @@ namespace GameEventMicroservice.Presentation.Kafka.ProducerHandlers;
 
 public class KillCharacterHandler : IEventHandler<CharacterKilledEvent>
 {
-    private readonly IKafkaMessageProducer<CharacterKilledKey, CharacterKilledValue> _producer;
+    private readonly IKafkaMessageProducer<CharacterUpdateKey, CharacterUpdateValue> _producer;
 
-    public KillCharacterHandler(IKafkaMessageProducer<CharacterKilledKey, CharacterKilledValue> producer)
+    public KillCharacterHandler(IKafkaMessageProducer<CharacterUpdateKey, CharacterUpdateValue> producer)
     {
         _producer = producer;
     }
 
     public async ValueTask HandleAsync(CharacterKilledEvent evt, CancellationToken cancellationToken)
     {
-        var key = new CharacterKilledKey()
+        var key = new CharacterUpdateKey()
         {
             GameId = evt.GameId,
         };
 
-        var value = new CharacterKilledValue
+        var value = new CharacterUpdateValue
         {
-            GameId = evt.GameId,
-            CharacterId = evt.CharacterId,
+            CharacterKill = new CharacterKilledValue()
+            {
+                GameId = evt.GameId,
+                CharacterId = evt.CharacterId,
+            },
         };
-
-        var message = new KafkaProducerMessage<CharacterKilledKey, CharacterKilledValue>(key, value);
+        var message = new KafkaProducerMessage<CharacterUpdateKey, CharacterUpdateValue>(key, value);
         await _producer.ProduceAsync(message, cancellationToken);
     }
 }
