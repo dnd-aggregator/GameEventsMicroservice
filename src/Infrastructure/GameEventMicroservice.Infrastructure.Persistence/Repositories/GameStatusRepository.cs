@@ -52,7 +52,7 @@ public class GameStatusRepository : IGameStatusRepository
         await using DbDataReader charactersReader = await charactersCommand.ExecuteReaderAsync(cancellationToken);
         while (await charactersReader.ReadAsync(cancellationToken))
         {
-            characterIds.Add(charactersReader.GetInt64(0));
+            characterIds.Add(charactersReader.GetInt64(1));
         }
 
         var game = new Game(gameId, gameStatus, characterIds);
@@ -64,6 +64,7 @@ public class GameStatusRepository : IGameStatusRepository
         const string sql = """
                      insert into games (game_id, game_state)
                      VALUES (@id, @state)
+                     on conflict do nothing
                      """;
 
         await using IPersistenceConnection connection = await _connectionProvider.GetConnectionAsync(cancellationToken);
@@ -83,9 +84,12 @@ public class GameStatusRepository : IGameStatusRepository
             string sqlCharacter = """
                          insert into game_characters (game_id, character_id)
                          VALUES (@game_id, @character_id)
+                         on conflict do nothing
                          """;
             await using IPersistenceConnection connect = await _connectionProvider.GetConnectionAsync(cancellationToken);
-            await using IPersistenceCommand characterCommand = connect.CreateCommand(sqlCharacter);
+            await using IPersistenceCommand characterCommand = connect.CreateCommand(sqlCharacter)
+                .AddParameter("@game_id", game.Id)
+                .AddParameter("@character_id", characterId);
             await characterCommand.ExecuteNonQueryAsync(cancellationToken);
             await connect.DisposeAsync();
             await command.DisposeAsync();

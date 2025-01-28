@@ -42,7 +42,7 @@ message Success {}
 
 message NotFound {}
 
-service CharacterService {
+service CharacterStatusService {
   rpc KillCharacter(KillCharacterRequest) returns (KillCharacterResponse);
   rpc AddWeapon(AddWeaponRequest) returns (AddWeaponResponse);
   rpc AddGear(AddGearRequest) returns (AddGearResponse);

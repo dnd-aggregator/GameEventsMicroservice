@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace GameEventMicroservice.Presentation.Grpc.Controllers;
 
-public class CharacterGrpcController : CharacterService.CharacterServiceBase
+public class CharacterGrpcController : CharacterStatusService.CharacterStatusServiceBase
 {
     private readonly ICharacterService _characterService;
 
@@ -20,7 +20,7 @@ public class CharacterGrpcController : CharacterService.CharacterServiceBase
         AddGear.Result resp = await _characterService.AddGear(subRequest, context.CancellationToken);
         return resp switch
         {
-            AddGear.Result.Success _ => new AddGearResponse(),
+            AddGear.Result.Success _ => new AddGearResponse() { Success = new Success() },
 
             AddGear.Result.NotFound invalidState => throw new RpcException(new Status(
                 StatusCode.NotFound,
@@ -36,7 +36,7 @@ public class CharacterGrpcController : CharacterService.CharacterServiceBase
         AddWeapon.Result resp = await _characterService.AddWeapon(subRequest, context.CancellationToken);
         return resp switch
         {
-            AddWeapon.Result.Success _ => new AddWeaponResponse(),
+            AddWeapon.Result.Success _ => new AddWeaponResponse() { Success = new Success() },
 
             AddWeapon.Result.NotFound invalidState => throw new RpcException(new Status(
                 StatusCode.NotFound,
@@ -52,7 +52,7 @@ public class CharacterGrpcController : CharacterService.CharacterServiceBase
         KillCharacter.Result resp = await _characterService.KillCharacter(subRequest, context.CancellationToken);
         return resp switch
         {
-            KillCharacter.Result.Success _ => new KillCharacterResponse(),
+            KillCharacter.Result.Success _ => new KillCharacterResponse() { Success = new Success() },
 
             KillCharacter.Result.NotFound invalidState => throw new RpcException(new Status(
                 StatusCode.NotFound,

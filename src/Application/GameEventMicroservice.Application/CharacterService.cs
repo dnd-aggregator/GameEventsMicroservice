@@ -34,13 +34,13 @@ public class CharacterService : ICharacterService
     public async Task<AddGear.Result> AddGear(AddGear.Request request, CancellationToken cancellationToken = default)
     {
         Models.Game? game = await _persistenceContext.GameStatusRepository.GetAsync(request.GameId, cancellationToken);
-        if (game == null || game.CharactersIds.FirstOrDefault(ch => ch == request.CharacterId) == default)
+        if (game is not null && game.CharactersIds.Any(ch => ch == request.CharacterId))
         {
-            return new AddGear.Result.NotFound();
+            await _eventPublisher.PublishAsync(new AddGearEvent(request.GameId, request.CharacterId, request.Gear), cancellationToken);
+            return new AddGear.Result.Success();
         }
 
-        await _eventPublisher.PublishAsync(new AddGearEvent(request.GameId, request.CharacterId, request.Gear));
-        return new AddGear.Result.Success();
+        return new AddGear.Result.NotFound();
     }
 
     public async Task<AddWeapon.Result> AddWeapon(

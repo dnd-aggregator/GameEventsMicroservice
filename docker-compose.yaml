@@ -1,3 +1,4 @@
+version: '3.0'
 services:
   postgres:
     image: postgres:latest
@@ -35,6 +36,7 @@ services:
       KAFKA_CREATE_TOPICS: >
         game_status:1:1,
         schedule_game:1:1,
+        character_update:1:1,
     depends_on:
       - zookeeper
     networks:
@@ -68,9 +70,11 @@ services:
       
       kafka.clusters.0.serde.0.properties.protobufMessageNameForKeyByTopic.game_status: dnd.GameStatusKey
       kafka.clusters.0.serde.0.properties.protobufMessageNameForKeyByTopic.schedule_game: dnd.GameScheduleKey
+      kafka.clusters.0.serde.0.properties.protobufMessageNameForKeyByTopic.character_update: dnd.CharacterUpdateKey
       
       kafka.clusters.0.serde.0.properties.protobufMessageNameByTopic.game_status: dnd.GameStatusValue
       kafka.clusters.0.serde.0.properties.protobufMessageNameByTopic.schedule_game: dnd.GameScheduleValue
+      kafka.clusters.0.serde.0.properties.protobufMessageNameByTopic.character_update: dnd.CharacterUpdateValue
 
 networks:
   game-event-service-network:
